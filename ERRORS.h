@@ -1,11 +1,27 @@
 #pragma once
 
-#ifndef _ERRORS_INC
-#define _ERRORS_INC
 
 
 
 
 #define WINDOW_ERROR L"Window Error!!"
 
-#endif
+
+
+
+
+
+
+
+
+
+
+// Error codes. Not sure if I´m putting them for user or gameing errors, or something more generic. malloca fail is for programming/execution errors.
+// Thinks it s better for diving them into separete things, since those errors, means different things
+
+
+#define CODE_ERROR_MALLOC_FAIL -50
+
+
+
+

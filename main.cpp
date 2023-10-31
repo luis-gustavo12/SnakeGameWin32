@@ -103,21 +103,28 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
 
 	// Windows Class definition
+	wndGameWindowClass.lpfnWndProc       = GameWindowProcedure;
+	wndGameWindowClass.lpszClassName	 = szClassName;
+	wndGameWindowClass.hInstance		 = hInstance;
+	wndGameWindowClass.style			 = 0;
+	wndGameWindowClass.cbClsExtra		 = 0;
+	wndGameWindowClass.cbSize			 = sizeof(WNDCLASSEXW);
+	wndGameWindowClass.lpszMenuName      = NULL;
+	wndGameWindowClass.cbWndExtra        = 0;
+	wndGameWindowClass.hIcon			 = LoadIconW(NULL, IDI_APPLICATION);
+	wndGameWindowClass.hIconSm           = LoadIconW(NULL, IDI_APPLICATION);
+	wndGameWindowClass.hCursor           = LoadCursorW(NULL, IDC_ARROW);
+	wndGameWindowClass.hbrBackground     = CreateSolidBrush( RGB(189,125,35) );
 
-	//TODO: Futurelly, here will load the string from the configuration file pre-defined by the user.
-	const wchar_t szClassName [] = L"Snake Game";
 
-	WNDCLASS wndClass = { 0 };
+	if (RegisterClassExW(&wndGameWindowClass) == 0) {
 
-	wndClass.lpfnWndProc = GameWindowProcedure;
-	wndClass.lpszClassName = szClassName;
-	wndClass.hInstance = hInstance;
 
-	if (RegisterClass(&wndClass) == 0) {
-		 
 		MessageBoxW(NULL, L"Error!! Could not register class!!", L"Error code: ", NULL);
 		return GetLastError();
+
 	}
+
 
 
 	GameWindow = CreateWindowExW(
@@ -138,6 +145,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 	if (GameWindow == NULL) {
 
 		MessageBoxW(NULL, L"Error!! Could not Handle!!", L"Error code: ", NULL);
+		return 0;
 
 	}
 
@@ -161,19 +169,25 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 	*****************************************************************************/
 
 
-
 	while (bGameRunning) {
 
 
 		// Windows messages loop
-		while ( PeekMessageW(&uMessage, GameWindow, 0, 0, PM_NOREMOVE) ) {
+		while ( PeekMessageW(&uMessage, GameWindow, 0, 0, PM_REMOVE | PM_NOREMOVE)   ){
 
 
-			TranslateMessage(&uMessage);
+			
 			DispatchMessageW(&uMessage);
+			
+
+			
 
 		}
 
+
+		vProcessUserInput();
+
+		vPorcessGraphics();
 
 
 
@@ -215,11 +229,26 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
 
 LRESULT GameWindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+
+
 	switch (uMsg) {
+
 	case WM_DESTROY:
 		OutputDebugStringW(L"WM_DESTROY");
-		PostQuitMessage(-1);
-		return -1;
+		bGameRunning = false;
+		PostQuitMessage(WM_QUIT);
+		return 0;
+
+
+
+
+
+	case WM_QUIT:
+
+
+		OutputDebugStringW(L"WM_QUIT");
+		vQuitApplication();
+		return 0;
 
 	case WM_PAINT:
 	
@@ -235,10 +264,20 @@ LRESULT GameWindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 
 		return 0;
 
+
+	
+
 	}
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
 
 }
+
+
+
+
+
+
+
 
 
 
@@ -262,15 +301,49 @@ bool bInstanceRunning() {
 
 void vProcessUserInput() {
 
-	// 
+	
+	// Setting struct values
+
+	stUserInput.shCtrlW = (   GetAsyncKeyState(VK_LCONTROL) && GetAsyncKeyState('W')   );
+	stUserInput.shEsc   = GetAsyncKeyState(VK_ESCAPE);
 
 	
 	
+
+
+
+
+
+	// Run logic for all of the keys, and also relying on game state, which will be includede after
+
+	if (stUserInput.shCtrlW) {
+		SendMessage(GameWindow, WM_DESTROY, 0, 0);
+		return;
+	}
+
+	else if (stUserInput.shEsc) {
+		SendMessage(GameWindow, WM_DESTROY, 0, 0);
+		return;
+	}
+
+
+
 
 
 }
 
 void vPorcessGraphics() {
+
+
+
+
+
+
+
+
+
+
+
 }
 
 void vLoadGameCanva() {
@@ -304,9 +377,53 @@ void vLoadGameCanva() {
 
 }
 
-void vQuitApplication() {
 
-	MessageBoxW(NULL, L"Fail to allocate memory!!", L"Fail", MB_OK);
-	PostQuitMessage(-1);
+void vGameOver() {
+	;
+}
+
+
+
+void vQuitApplication(eQuitApplicationOption eOption, const char* szMessage) {
+
+
+	wchar_t* wszWideStrMessage = (wchar_t* )malloc ( (2048 + 1) * sizeof(wchar_t)    )  ; // Wide string to be displayed in MessageBoxW
+
+
+	if (wszWideStrMessage == NULL) {
+		exit(-1);
+	}
+
+	
+
+	wsprintf(wszWideStrMessage, L"%s", szMessage);
+
+
+	switch (eOption) {
+
+		
+		case NO_MESSAGE:
+			free(wszWideStrMessage);
+			exit(-1);
+			break;
+
+
+		case MESSAGE_BOX:
+
+			MessageBoxW(NULL, wszWideStrMessage, L"Fail", MB_OK);
+			free(wszWideStrMessage);
+			exit(-1);
+			break;
+
+	}
+
+
+	free(wszWideStrMessage);
+	exit(-1);
+
+
 
 }
+
+
+// TESTEE

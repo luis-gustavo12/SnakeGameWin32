@@ -3,9 +3,6 @@
 
 // Defines
 
-#ifndef _UNICODE
-#define _UNICODE
-#endif
 
 #define NAME_OF_GAME L"SnakeGame - Win32"
 #define EXECUTABLE_NAME L"SnakeGameWin32"
@@ -33,6 +30,10 @@
 
 
 #include "ERRORS.h"
+#include "STRING.h"
+#include "INPUT.h"
+
+
 
 // Globals
 
@@ -41,47 +42,14 @@
 bool          bGameRunning = 1;
 HWND          GameWindow;
 
+const wchar_t szClassName[] = L"Snake Game";      //TODO: Futurelly, here will load the string from the configuration file pre-defined by the user.
 
 
-// Functions
+WNDCLASSEXW wndGameWindowClass = { 0 };              // Window Class to be used on bCreateGameWindow() function.
 
 
-/**
- * 
- * @brief Main game window procedure, original from Windos API. See more on: https://learn.microsoft.com/en-us/windows/win32/learnwin32/writing-the-window-procedure.
- * 
- * 
- * 
- */
+USERINPUT stUserInput = { 0 }; // Struct that will handle user input.
 
-
-LRESULT CALLBACK GameWindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-
-
-/**
- * @brief Checks weather there큦 already a game큦 executable running. Just a way to prevent users from running the game twice.
- *
- * @return If there큦 already an instance, Mutex Object could not be created, so it returns false. Otherwise, true.
- * 
- */
-
-
-bool bInstanceRunning();
-
-
-
-void vProcessUserInput();
-
-
-void vPorcessGraphics();
-
-
-void vLoadGameCanva();
-
-
-void vGameOver();
-
-void vQuitApplication();
 
 
 // Structs
@@ -95,8 +63,78 @@ typedef struct {
 } GAME_CANVA, PST_GAME_CANVA;
 
 
-
+enum eQuitApplicationOption {
+	NO_MESSAGE,  // No message to be displayed
+	MESSAGE_BOX // Display messagebox
+};
 
 
 
 GAME_CANVA    gstGameCanva; // Surface where game will be written into
+
+
+
+
+
+
+
+
+
+
+// Functions
+
+
+/**
+ *
+ * @brief Main game window procedure, original from Windos API. See more on: https://learn.microsoft.com/en-us/windows/win32/learnwin32/writing-the-window-procedure.
+ *
+ *
+ *
+ */
+
+
+LRESULT CALLBACK GameWindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
+
+/**
+ * @brief Checks weather there큦 already a game큦 executable running. Just a way to prevent users from running the game twice.
+ *
+ * @return If there큦 already an instance, Mutex Object could not be created, so it returns false. Otherwise, true.
+ *
+ */
+
+
+
+
+bool bInstanceRunning();
+
+
+
+/**
+ * 
+ * @brief Process all user큦 input. First, it will set, for every single frame, a value to all USERINPUT struct members (defined at INPUT.h file) 
+ * .Then, it will run again over all of them to apply its logics, given the game큦 current state, and based on its value, it will send a Message
+ * to the Message Queue, making its logic through it. 
+ * .
+ */
+
+
+void vProcessUserInput();
+
+
+
+void vPorcessGraphics();
+
+
+
+void vLoadGameCanva();
+
+
+
+void vGameOver();
+
+
+
+void vQuitApplication(eQuitApplicationOption eOption = NO_MESSAGE, const char* szMessage = "Fail");
+
+
