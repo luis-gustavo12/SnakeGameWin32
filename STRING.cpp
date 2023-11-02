@@ -29,23 +29,21 @@
  */
 
 
-wchar_t* wchszFormatWideString(char* szString) {
+char* szFormatWideString(char* szString) {
 
-	wchar_t* wchszResult;
-
-
-
-	if ( (wchszResult = (wchar_t*)malloc( (sizeof(szString) + 1) * sizeof(wchar_t)  )  ) == NULL) {
-		return nullptr;
-	}
-
-
-	wsprintf(wchszResult, L"%s", szString);
+	char szResult  [600];
 
 
 
 
 
 
-	return wchszResult;
+	sprintf_s(szResult, "%s", szString);
+
+
+
+
+
+
+	return szResult;
 }

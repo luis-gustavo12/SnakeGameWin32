@@ -4,7 +4,7 @@
 
 
 
-#define WINDOW_ERROR L"Window Error!!"
+#define WINDOW_ERROR "Window Error!!"
 
 
 

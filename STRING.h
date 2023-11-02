@@ -15,5 +15,5 @@
 
 
 
-wchar_t* wchszFormatWideString(char* szString);
+char* szFormatWideString(char* szString);
 

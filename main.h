@@ -4,8 +4,8 @@
 // Defines
 
 
-#define NAME_OF_GAME L"SnakeGame - Win32"
-#define EXECUTABLE_NAME L"SnakeGameWin32"
+#define   NAME_OF_GAME	    "SnakeGame - Win32"
+#define   EXECUTABLE_NAME   "SnakeGameWin32"
 
 
 /**
@@ -19,7 +19,7 @@
 #define   GAME_WINDOW_WIDTH      576
 #define   GAME_BPP                32  // Bits per Pixel. Means every single bit, will handle 32 bits, 8 for Red, 8 for Green, and 8 for Blue
 #define   GAME_CANVA_SIZE       (GAME_WINDOW_WIDTH* GAME_WINDOW_WIDTH) // It s here, so we can be compatible with WindowsAPI. At some point, we'll need this info
-
+#define   GAME_CANVA_DRAW_AREA  ( GAME_CANVA_SIZE * (GAME_BPP / 8)  )
 
 
 // Includes
@@ -40,12 +40,12 @@
 
 
 bool          bGameRunning = 1;
-HWND          GameWindow;
+HWND          hGameWindow;
 
-const wchar_t szClassName[] = L"Snake Game";      //TODO: Futurelly, here will load the string from the configuration file pre-defined by the user.
+const char szClassName[] = "Snake Game";      //TODO: Futurelly, here will load the string from the configuration file pre-defined by the user.
 
 
-WNDCLASSEXW wndGameWindowClass = { 0 };              // Window Class to be used on bCreateGameWindow() function.
+WNDCLASSEXA wndGameWindowClass = { 0 };              // Window Class to be used on bCreateGameWindow() function.
 
 
 USERINPUT stUserInput = { 0 }; // Struct that will handle user input.
@@ -123,7 +123,7 @@ void vProcessUserInput();
 
 
 
-void vPorcessGraphics();
+void vProcessGraphics();
 
 
 
